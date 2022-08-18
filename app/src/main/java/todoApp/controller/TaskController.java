@@ -6,10 +6,8 @@ package todoApp.controller;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.Date;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import todoApp.model.Task;
@@ -72,12 +70,15 @@ public class TaskController {
             statement.setInt(9, task.getId());
             statement.execute();
         } catch (Exception e) {
+            throw new RuntimeException("Erro ao atualizar a tarefa"
+                    + e.getMessage(), e);
         } finally {
+            ConnectionFactory.closeConnection(conn, statement);
         }
 
     }
 
-    public void removeById(int taskId) throws SQLException {
+    public void removeById(int taskId) {
 
         String sql = "DELETE FROM tasks WHERE ID = ?";
 
@@ -127,7 +128,7 @@ public class TaskController {
                 tasks.add(task);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao deletar a tarefa"
+            throw new RuntimeException("Erro ao consultar as tarefas"
                     + e.getMessage(), e);
         } finally {
             ConnectionFactory.closeConnection(conn, statement, resultSet);
