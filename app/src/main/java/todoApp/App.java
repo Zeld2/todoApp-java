@@ -3,19 +3,28 @@
  */
 package todoApp;
 
-import com.mysql.jdbc.Connection;
 import java.util.Date;
-import todoApp.util.ConnectionFactory;
+import todoApp.controller.ProjectController;
+import todoApp.controller.TaskController;
+import todoApp.model.Project;
+import todoApp.model.Task;
 
 public class App {
 
     public static void main(String[] args) {
-        Date today;
-        long miliseconds = 1500;
-        today = new Date(miliseconds);
-        java.sql.Date sqlToday;
-        sqlToday = new java.sql.Date(today.getTime());
-        System.out.println(today);
-        System.out.println(sqlToday);
+
+        TaskController taskController = new TaskController();
+
+        Task task = taskController.get(5);
+
+        System.out.println(task);
+
+        task.setIsCompleted(true);
+
+        System.out.println(task);
+
+        taskController.update(task);
+
     }
+
 }

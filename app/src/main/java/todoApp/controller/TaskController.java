@@ -40,8 +40,7 @@ public class TaskController {
             statement.setDate(8, new Date(task.getUpdatedAt().getTime()));
             statement.execute();
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao salvar a tarefa"
-                    + e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         } finally {
             ConnectionFactory.closeConnection(conn, statement);
         }
@@ -49,9 +48,16 @@ public class TaskController {
     }
 
     public void update(Task task) {
-        String sql = "UPDATE tasks SET idProject = ?, name = ?, "
-                + "description =?, notes =?, completed = ?, deadline = ?, "
-                + "createdAt = ?, updatedAt = ? WHERE id = ?";
+        String sql = "UPDATE tasks SET "
+                + "idProject = ?, "
+                + "name = ?, "
+                + "description =?, "
+                + "notes = ?, "
+                + "completed = ?, "
+                + "deadline = ?, "
+                + "createdAt = ?, "
+                + "updatedAt = ? "
+                + "WHERE id = ?";
 
         Connection conn = null;
         PreparedStatement statement = null;
@@ -59,11 +65,12 @@ public class TaskController {
         try {
             conn = ConnectionFactory.getConnection();
             statement = conn.prepareStatement(sql);
+
             statement.setInt(1, task.getIdProject());
             statement.setString(2, task.getName());
             statement.setString(3, task.getDescription());
-            statement.setBoolean(4, task.isIsCompleted());
-            statement.setString(5, task.getNotes());
+            statement.setBoolean(5, task.isIsCompleted());
+            statement.setString(4, task.getNotes());
             statement.setDate(6, new Date(task.getDeadline().getTime()));
             statement.setDate(7, new Date(task.getCreatedAt().getTime()));
             statement.setDate(8, new Date(task.getUpdatedAt().getTime()));
@@ -134,6 +141,43 @@ public class TaskController {
             ConnectionFactory.closeConnection(conn, statement, resultSet);
         }
         return tasks;
+    }
+
+    public Task get(int id) {
+        String sql = "SELECT * FROM tasks WHERE id = ?";
+
+        Connection conn = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            conn = ConnectionFactory.getConnection();
+            statement = conn.prepareStatement(sql);
+            statement.setInt(1, id);
+            resultSet = statement.executeQuery();
+            Task task = new Task();
+
+            while (resultSet.next()) {
+
+                task.setId(resultSet.getInt("id"));
+                task.setIdProject(resultSet.getInt("idProject"));
+                task.setName(resultSet.getString("name"));
+                task.setDescription(resultSet.getString("description"));
+                task.setNotes(resultSet.getString("notes"));
+                task.setIsCompleted(resultSet.getBoolean("completed"));
+                task.setDeadline(resultSet.getDate("deadline"));
+                task.setCreatedAt(resultSet.getDate("createdAt"));
+                task.setUpdatedAt(resultSet.getDate("updatedAt"));
+
+            }
+            return task;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao consultar as tarefas"
+                    + e.getMessage(), e);
+        } finally {
+            ConnectionFactory.closeConnection(conn, statement, resultSet);
+        }
     }
 
 }
